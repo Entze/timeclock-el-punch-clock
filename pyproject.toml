@@ -1,0 +1,17 @@
+[project]
+name = "punch-clock"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Lukas Grassauer", email = "lukas@grassauer.eu" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+punch-clock = "punch_clock:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
