@@ -1,4 +1,6 @@
 [tools]
+just = "1.40.0"
+taplo = "0.9.3"
 uv = "0.6.13"
 
 [settings]
