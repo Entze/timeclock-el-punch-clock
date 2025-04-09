@@ -7,6 +7,12 @@ pre-commit:
         - '*.toml'
       exclude:
         - .venv/**/*.toml
+    - name: check-yaml
+      run: just check-yaml {staged_files}
+      glob:
+        - .yamllint
+        - '*.yaml'
+        - '*.yml'
     - name: check-python-buildtool
       run: just check-python-buildtool
       glob:
