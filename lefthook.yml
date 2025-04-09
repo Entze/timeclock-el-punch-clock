@@ -3,7 +3,8 @@ pre-commit:
   jobs:
     - name: check-toml
       run: just check-toml {staged_files}
-      glob: '*.toml'
+      glob:
+        - '*.toml'
       exclude:
         - .venv/**/*.toml
     - name: check-python-buildtool
