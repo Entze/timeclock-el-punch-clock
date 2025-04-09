@@ -1,4 +1,4 @@
-fix: fix-all-justfile fix-all-toml fix-all-python
+fix: fix-all-justfile fix-all-toml fix-all-yaml fix-python-buildtool fix-all-python
 
 [group('fix')]
 fix-justfile PATH:
@@ -27,11 +27,26 @@ fix-all-toml:
 fix-toml-format +PATHS:
     taplo format {{ PATHS }}
 
+fix-yaml +PATHS:
+    @just fix-yaml-format {{ PATHS }}
+
+fix-all-yaml:
+    @just fix-yaml .yamllint *.yml
+
+[group('fix')]
+fix-yaml-format +PATHS:
+    #!/usr/bin/env sh
+    for path in {{ PATHS }}; do
+        yq --prettyPrint --inplace $path
+    done
+
+fix-python-buildtool:
+    uv lock
+
 [group('fix')]
 fix-python +PATHS:
     @just fix-python-format {{ PATHS }}
     @just fix-python-lint {{ PATHS }}
-    @just fix-python-buildtool
 
 [group('fix')]
 fix-all-python:
@@ -44,6 +59,3 @@ fix-python-format +PATHS:
 [group('fix')]
 fix-python-lint +PATHS:
     ruff check --fix {{ PATHS }}
-
-fix-python-buildtool:
-    uv lock

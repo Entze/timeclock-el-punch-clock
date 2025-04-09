@@ -1,7 +1,10 @@
 [tools]
 just = "1.40.0"
+lefthook = "1.11.8"
 taplo = "0.9.3"
 uv = "0.6.13"
+yamllint = "1.37.0"
+yq = "4.45.1"
 
 [settings]
 python.uv_venv_auto = true

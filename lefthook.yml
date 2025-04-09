@@ -1,0 +1,18 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: check-toml
+      run: just check-toml {staged_files}
+      glob: '*.toml'
+      exclude:
+        - .venv/**/*.toml
+    - name: check-python-buildtool
+      run: just check-python-buildtool
+      glob:
+        - pyproject.toml
+        - uv.lock
+    - name: check-python
+      run: just check-python {staged_files}
+      glob:
+        - src/**/*.py
+        - tests/**/*.py

@@ -15,3 +15,5 @@ lint-python-analysis +PATHS:
 
 [group('lint')]
 lint-python-typecheck +PATHS:
+    mypy {{ PATHS }}
+    pyright {{ PATHS }}
