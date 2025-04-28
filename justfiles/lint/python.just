@@ -6,6 +6,7 @@ lint-python +PATHS:
 [group('lint')]
 lint-all-python:
     @just lint-python src/
+    @just lint-python-lint tests/
 
 [group('lint')]
 lint-python-lint +PATHS:
