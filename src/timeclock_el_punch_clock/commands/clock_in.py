@@ -18,7 +18,10 @@ def _clock_in__call___ensure(self: ClockIn, result: None) -> bool:
     with self.file.open(mode="r") as file:
         for line in file:
             lines += 1
-    in_line = f"i {self.datetimestamp.strftime('%Y-%m-%d %H:%M:%S')} {self.delimiter.join(self.accounts)}\n"
+    accounts = ""
+    if self.accounts:
+        accounts = f" {self.delimiter.join(self.accounts)}"
+    in_line = f"i {self.datetimestamp.strftime('%Y-%m-%d %H:%M:%S')}{accounts}\n"
     return lines > 0 and line is not None and line == in_line
 
 
@@ -36,6 +39,9 @@ class ClockIn:
     @deal.has("io")
     @deal.ensure(_clock_in__call___ensure)
     def __call__(self) -> None:
-        line: str = f"i {self.datetimestamp.strftime('%Y-%m-%d %H:%M:%S')} {self.delimiter.join(self.accounts)}\n"
+        accounts = ""
+        if self.accounts:
+            accounts = f" {self.delimiter.join(self.accounts)}"
+        line: str = f"i {self.datetimestamp.strftime('%Y-%m-%d %H:%M:%S')}{accounts}\n"
         with self.file.open(mode="a") as file:
             file.write(line)
