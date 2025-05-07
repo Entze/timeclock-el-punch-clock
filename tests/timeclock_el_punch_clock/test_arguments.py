@@ -9,6 +9,11 @@ import pytest
 
 from timeclock_el_punch_clock.paths import writeable_file_paths
 from timeclock_el_punch_clock.arguments import Arguments
+from timeclock_el_punch_clock.paths.errors import (
+    PathNotWriteableError,
+    PathDoesNotExist,
+    PathNotAFileError,
+)
 
 _default_datetimestamp = datetime.datetime(1970, 1, 1, 0, 0, 0)
 
@@ -65,12 +70,10 @@ def test_from_namespace_with_non_existing_file_raises_exception_group_with_path_
 
     with pytest.raises(ExceptionGroup) as excinfo:
         Arguments.from_namespace(namespace)
-        assert str(path) in excinfo.value, (
-            f"ExceptionGroup shows the path: {excinfo.value}"
-        )
-        assert "does not exist" in excinfo.value, (
-            f"ExceptionGroup shows the reason: {excinfo.value}"
-        )
+    assert any(
+        isinstance(exception, PathDoesNotExist)
+        for exception in excinfo.value.exceptions
+    )
 
 
 def test_from_namespace_with_directory_raises_exception_group_with_not_a_file_error() -> (
@@ -82,12 +85,10 @@ def test_from_namespace_with_directory_raises_exception_group_with_not_a_file_er
 
         with pytest.raises(ExceptionGroup) as excinfo:
             Arguments.from_namespace(namespace)
-            assert str(path) in excinfo.value, (
-                f"ExceptionGroup.value shows the path: {excinfo.value}"
-            )
-            assert "is not a file" in excinfo.value, (
-                f"ExceptionGroup shows the reason: {excinfo.value}"
-            )
+        assert any(
+            isinstance(exception, PathNotAFileError)
+            for exception in excinfo.value.exceptions
+        )
 
 
 def test_from_namespace_with_non_readable_file_raises_exception_group_with_not_writeable_error() -> (
@@ -100,12 +101,10 @@ def test_from_namespace_with_non_readable_file_raises_exception_group_with_not_w
 
         with pytest.raises(ExceptionGroup) as excinfo:
             Arguments.from_namespace(namespace)
-            assert str(path) in excinfo.value, (
-                f"ExceptionGroup.value shows the path: {excinfo.value}"
-            )
-            assert "is not writeable" in excinfo.value, (
-                f"ExceptionGroup shows the reason: {excinfo.value}"
-            )
+        assert any(
+            isinstance(exception, PathNotWriteableError)
+            for exception in excinfo.value.exceptions
+        )
 
 
 def test_from_namespace_with_datetimestamp_returns_command_with_datetimestamp() -> None:
