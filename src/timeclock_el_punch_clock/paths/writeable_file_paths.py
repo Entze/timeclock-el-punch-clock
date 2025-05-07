@@ -3,25 +3,23 @@ from typing import NewType
 
 import deal
 
-from timeclock_el_punch_clock.paths.errors import NotAFileError, NotWriteableError
+from timeclock_el_punch_clock.paths.errors import PathDoesNotExist, PathNotAFileError, PathNotWriteableError
 
 WriteableFilePath = NewType("WriteableFilePath", pathlib.Path)
 
 
 @deal.has("io")
 @deal.raises(
-    FileNotFoundError,
-    NotAFileError,
-    NotWriteableError,
-    OSError,  # open
+    PathDoesNotExist,
+    PathNotAFileError,
+    PathNotWriteableError,
 )
 def from_path(path: pathlib.Path) -> WriteableFilePath:
     if not path.exists(follow_symlinks=True):
-        raise FileNotFoundError(path)
+        raise PathDoesNotExist(f'"{path}" does not exist')
     if not path.is_file():
-        raise NotAFileError(f'"{path}" is not a file')
-
+        raise PathNotAFileError(f'"{path}" is not a file')
     with path.open("w") as file:
         if not file.writable():
-            raise NotWriteableError(f'"{path}" is not writable')
+            raise PathNotWriteableError(f'"{path}" is not writable')
     return WriteableFilePath(path)

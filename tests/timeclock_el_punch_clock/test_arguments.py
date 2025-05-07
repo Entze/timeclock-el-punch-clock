@@ -24,3 +24,21 @@ def test_from_namespace_with_empty_namespace_returns_default() -> None:
         actual = Arguments.from_namespace(namespace)
 
     assert actual == expected
+
+
+def test_from_namespace_with_file_returns_command_with_file() -> None:
+    with tempfile.NamedTemporaryFile(mode='w') as file:
+        path = pathlib.Path(file.name)
+        namespace = argparse.Namespace(file=path)
+        with (mock.patch.object(Arguments, "default_datetimestamp", return_value=_default_datetimestamp)):
+            expected = Arguments(
+                file=writeable_file_paths.from_path(writeable_file_paths.from_path(path)),
+                datetimestamp=Arguments.default_datetimestamp(),
+                accounts=Arguments.default_accounts(),
+                delimiter=Arguments.default_delimiter(),
+            )
+
+            actual = Arguments.from_namespace(namespace)
+
+    assert actual == expected
+

@@ -1,6 +1,9 @@
-class NotAFileError(OSError):
+class PathDoesNotExist(Exception):
+    pass
+
+class PathNotAFileError(Exception):
     pass
 
 
-class NotWriteableError(OSError):
+class PathNotWriteableError(Exception):
     pass

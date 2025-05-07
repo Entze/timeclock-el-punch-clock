@@ -9,8 +9,26 @@ import deal
 
 import timeclock_el_punch_clock.paths.writeable_file_paths as writeable_file_paths
 from timeclock_el_punch_clock.accounts import Account
-from timeclock_el_punch_clock.paths.errors import NotAFileError, NotWriteableError
+from timeclock_el_punch_clock.paths.errors import PathDoesNotExist, PathNotAFileError, PathNotWriteableError
 from timeclock_el_punch_clock.paths.writeable_file_paths import WriteableFilePath
+
+
+def _get_from_namespace[T, V](
+        namespace: argparse.Namespace,
+        attr: str,
+        default_factory: Callable[[], T],
+        parse: Callable[[T], V] | None = None,
+) -> V:
+    unparsed_arg: T = default_factory()
+    if hasattr(namespace, attr):
+        unparsed_arg = getattr(namespace, attr)
+    if parse is not None:
+        return parse(unparsed_arg)
+    return unparsed_arg
+
+_ArgumentsFileError = PathDoesNotExist | PathNotAFileError | PathNotWriteableError
+_ArgumentsFileErrors = (PathDoesNotExist, PathNotAFileError, PathNotWriteableError)
+_ArgumentsError = _ArgumentsFileError
 
 @dataclass(frozen=True)
 class Arguments:
@@ -39,14 +57,26 @@ class Arguments:
     @deal.has("io")
     @deal.raises(ExceptionGroup)
     def from_namespace(cls, namespace: argparse.Namespace) -> Self:
-        # errors: MutableSequence[_ArgumentsError] = []
+        errors: MutableSequence[_ArgumentsError] = []
 
-        file: WriteableFilePath
-        datetimestamp: datetime.datetime
-        accounts: Sequence[Account]
-        delimiter: str
+        file: WriteableFilePath | None = None
+        datetimestamp: datetime.datetime | None = None
+        accounts: Sequence[Account] | None = None
+        delimiter: str | None = None
 
-        file = writeable_file_paths.from_path(cls.default_file())
+        try:
+            file = _get_from_namespace(namespace,
+                                       attr="file",
+                                       default_factory=cls.default_file,
+                                       parse=writeable_file_paths.from_path)
+        except _ArgumentsFileErrors as err:
+            errors.append(err)
+
+        if errors:
+            raise ExceptionGroup(f"Could not parse namespace {namespace} into Arguments", tuple(errors))
+        assert not errors, "Invariant: errors is empty"
+        assert file is not None, "Invariant: file is not None, if errors is empty"
+
         datetimestamp = cls.default_datetimestamp()
         accounts = cls.default_accounts()
         delimiter = cls.default_delimiter()
