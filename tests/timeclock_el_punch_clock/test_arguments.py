@@ -3,10 +3,12 @@ import datetime
 import pathlib
 import stat
 import tempfile
+from collections.abc import Sequence
 from unittest import mock
 
 import pytest
 
+from timeclock_el_punch_clock.accounts import Account
 from timeclock_el_punch_clock.paths import writeable_file_paths
 from timeclock_el_punch_clock.arguments import Arguments
 from timeclock_el_punch_clock.paths.errors import (
@@ -129,8 +131,9 @@ def test_from_namespace_with_datetimestamp_returns_command_with_datetimestamp() 
 
 
 def test_from_namespace_with_accounts_returns_command_with_accounts() -> None:
-    accounts = ("account", "subaccount")
+    accounts: Sequence[str] = ("account", "subaccount")
     namespace = argparse.Namespace(accounts=accounts)
+    accounts: Sequence[Account] = tuple(map(Account, accounts))
     with (
         tempfile.NamedTemporaryFile(mode="w") as file,
         mock.patch.object(
@@ -141,7 +144,7 @@ def test_from_namespace_with_accounts_returns_command_with_accounts() -> None:
         ),
     ):
         expected = Arguments(
-            file=Arguments.default_file(),
+            file=writeable_file_paths.from_path(Arguments.default_file()),
             datetimestamp=Arguments.default_datetimestamp(),
             accounts=accounts,
             delimiter=Arguments.default_delimiter(),

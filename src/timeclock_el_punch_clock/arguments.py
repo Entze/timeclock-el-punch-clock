@@ -8,7 +8,7 @@ from typing import Self, MutableSequence, Callable
 import deal
 
 import timeclock_el_punch_clock.paths.writeable_file_paths as writeable_file_paths
-from timeclock_el_punch_clock.accounts import Account
+from timeclock_el_punch_clock.accounts import Account, into_accounts
 from timeclock_el_punch_clock.paths.errors import (
     PathDoesNotExist,
     PathNotAFileError,
@@ -60,7 +60,7 @@ class Arguments:
         return datetime.datetime.now()
 
     @staticmethod
-    def default_accounts() -> Sequence[Account]:
+    def default_accounts() -> Sequence[str]:
         return ()
 
     @staticmethod
@@ -92,10 +92,11 @@ class Arguments:
             attr="datetime",
             default_factory=cls.default_datetimestamp,
         )
-        accounts = _get_from_namespace(
+        accounts = _parse_from_namespace(
             namespace,
             attr="accounts",
             default_factory=cls.default_accounts,
+            parse=into_accounts,
         )
 
         if errors:
