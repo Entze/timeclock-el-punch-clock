@@ -24,7 +24,7 @@ pre-commit:
         - src/**/*.py
         - tests/**/*.py
     - name: check-justfile
-      run: just check-justile {staged_files}
+      run: just check-justfile {staged_files}
       glob:
         - justfile
         - justfiles/**/*.just
