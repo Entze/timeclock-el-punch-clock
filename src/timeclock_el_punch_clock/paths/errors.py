@@ -1,6 +1,7 @@
 class PathDoesNotExist(Exception):
     pass
 
+
 class PathNotAFileError(Exception):
     pass
 

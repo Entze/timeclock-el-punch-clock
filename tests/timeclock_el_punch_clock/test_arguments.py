@@ -9,11 +9,18 @@ from timeclock_el_punch_clock.arguments import Arguments
 
 _default_datetimestamp = datetime.datetime(1970, 1, 1, 0, 0, 0)
 
+
 def test_from_namespace_with_empty_namespace_returns_default() -> None:
     namespace = argparse.Namespace()
-    with (tempfile.NamedTemporaryFile(mode='w') as file,
-          mock.patch.object(Arguments, "default_file", return_value=pathlib.Path(file.name)),
-          mock.patch.object(Arguments, "default_datetimestamp", return_value=_default_datetimestamp)):
+    with (
+        tempfile.NamedTemporaryFile(mode="w") as file,
+        mock.patch.object(
+            Arguments, "default_file", return_value=pathlib.Path(file.name)
+        ),
+        mock.patch.object(
+            Arguments, "default_datetimestamp", return_value=_default_datetimestamp
+        ),
+    ):
         expected = Arguments(
             file=writeable_file_paths.from_path(Arguments.default_file()),
             datetimestamp=Arguments.default_datetimestamp(),
@@ -27,12 +34,16 @@ def test_from_namespace_with_empty_namespace_returns_default() -> None:
 
 
 def test_from_namespace_with_file_returns_command_with_file() -> None:
-    with tempfile.NamedTemporaryFile(mode='w') as file:
+    with tempfile.NamedTemporaryFile(mode="w") as file:
         path = pathlib.Path(file.name)
         namespace = argparse.Namespace(file=path)
-        with (mock.patch.object(Arguments, "default_datetimestamp", return_value=_default_datetimestamp)):
+        with mock.patch.object(
+            Arguments, "default_datetimestamp", return_value=_default_datetimestamp
+        ):
             expected = Arguments(
-                file=writeable_file_paths.from_path(writeable_file_paths.from_path(path)),
+                file=writeable_file_paths.from_path(
+                    writeable_file_paths.from_path(path)
+                ),
                 datetimestamp=Arguments.default_datetimestamp(),
                 accounts=Arguments.default_accounts(),
                 delimiter=Arguments.default_delimiter(),

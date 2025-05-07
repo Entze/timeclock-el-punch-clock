@@ -3,7 +3,11 @@ from typing import NewType
 
 import deal
 
-from timeclock_el_punch_clock.paths.errors import PathDoesNotExist, PathNotAFileError, PathNotWriteableError
+from timeclock_el_punch_clock.paths.errors import (
+    PathDoesNotExist,
+    PathNotAFileError,
+    PathNotWriteableError,
+)
 
 WriteableFilePath = NewType("WriteableFilePath", pathlib.Path)
 
