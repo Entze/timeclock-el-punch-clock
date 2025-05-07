@@ -23,7 +23,10 @@ def from_path(path: pathlib.Path) -> WriteableFilePath:
         raise PathDoesNotExist(f'"{path}" does not exist')
     if not path.is_file():
         raise PathNotAFileError(f'"{path}" is not a file')
-    with path.open("w") as file:
-        if not file.writable():
-            raise PathNotWriteableError(f'"{path}" is not writable')
+    try:
+        with path.open("w") as file:
+            if not file.writable():
+                raise PathNotWriteableError(f'"{path}" is not writable')
+    except PermissionError as err:
+        raise PathNotWriteableError(f'"{path}" is not writable') from err
     return WriteableFilePath(path)
