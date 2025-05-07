@@ -17,18 +17,26 @@ from timeclock_el_punch_clock.paths.errors import (
 from timeclock_el_punch_clock.paths.writeable_file_paths import WriteableFilePath
 
 
-def _get_from_namespace[T, V](
+def _parse_from_namespace[T, V](
     namespace: argparse.Namespace,
     attr: str,
     default_factory: Callable[[], T],
-    parse: Callable[[T], V] | None = None,
+    parse: Callable[[T], V],
 ) -> V:
     unparsed_arg: T = default_factory()
     if hasattr(namespace, attr):
         unparsed_arg = getattr(namespace, attr)
-    if parse is not None:
-        return parse(unparsed_arg)
-    return unparsed_arg
+    return parse(unparsed_arg)
+
+
+def _get_from_namespace[V](
+    namespace: argparse.Namespace,
+    attr: str,
+    default_factory: Callable[[], V],
+) -> V:
+    if hasattr(namespace, attr):
+        return getattr(namespace, attr)
+    return default_factory()
 
 
 _ArgumentsFileError = PathDoesNotExist | PathNotAFileError | PathNotWriteableError
@@ -71,7 +79,7 @@ class Arguments:
         delimiter: str | None = None
 
         try:
-            file = _get_from_namespace(
+            file = _parse_from_namespace(
                 namespace,
                 attr="file",
                 default_factory=cls.default_file,
