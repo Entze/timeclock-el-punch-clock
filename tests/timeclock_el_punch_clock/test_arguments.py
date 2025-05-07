@@ -53,3 +53,23 @@ def test_from_namespace_with_file_returns_command_with_file() -> None:
 
     assert actual == expected
 
+
+def test_from_namespace_with_datetimestamp_returns_command_with_datetimestamp() -> None:
+    datetimestamp = datetime.datetime(2000, 1, 1, 12, 0, 0)
+    namespace = argparse.Namespace(datetime=datetimestamp)
+    with (
+        tempfile.NamedTemporaryFile(mode="w") as file,
+        mock.patch.object(
+            Arguments, "default_file", return_value=pathlib.Path(file.name)
+        ),
+    ):
+        expected = Arguments(
+            file=writeable_file_paths.from_path(Arguments.default_file()),
+            datetimestamp=datetimestamp,
+            accounts=Arguments.default_accounts(),
+            delimiter=Arguments.default_delimiter(),
+        )
+
+        actual = Arguments.from_namespace(namespace)
+
+    assert actual == expected

@@ -74,7 +74,7 @@ class Arguments:
         errors: MutableSequence[_ArgumentsError] = []
 
         file: WriteableFilePath | None = None
-        datetimestamp: datetime.datetime | None = None
+        datetimestamp: datetime.datetime
         accounts: Sequence[Account] | None = None
         delimiter: str | None = None
 
@@ -87,6 +87,11 @@ class Arguments:
             )
         except _ArgumentsFileErrors as err:
             errors.append(err)
+        datetimestamp = _get_from_namespace(
+            namespace,
+            attr="datetime",
+            default_factory=cls.default_datetimestamp,
+        )
 
         if errors:
             raise ExceptionGroup(
@@ -95,7 +100,6 @@ class Arguments:
         assert not errors, "Invariant: errors is empty"
         assert file is not None, "Invariant: file is not None, if errors is empty"
 
-        datetimestamp = cls.default_datetimestamp()
         accounts = cls.default_accounts()
         delimiter = cls.default_delimiter()
 
