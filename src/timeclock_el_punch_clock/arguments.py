@@ -75,7 +75,7 @@ class Arguments:
 
         file: WriteableFilePath | None = None
         datetimestamp: datetime.datetime
-        accounts: Sequence[Account] | None = None
+        accounts: Sequence[Account]
         delimiter: str | None = None
 
         try:
@@ -92,6 +92,11 @@ class Arguments:
             attr="datetime",
             default_factory=cls.default_datetimestamp,
         )
+        accounts = _get_from_namespace(
+            namespace,
+            attr="accounts",
+            default_factory=cls.default_accounts,
+        )
 
         if errors:
             raise ExceptionGroup(
@@ -100,7 +105,6 @@ class Arguments:
         assert not errors, "Invariant: errors is empty"
         assert file is not None, "Invariant: file is not None, if errors is empty"
 
-        accounts = cls.default_accounts()
         delimiter = cls.default_delimiter()
 
         return cls(

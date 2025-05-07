@@ -127,3 +127,27 @@ def test_from_namespace_with_datetimestamp_returns_command_with_datetimestamp() 
         actual = Arguments.from_namespace(namespace)
 
     assert actual == expected
+
+
+def test_from_namespace_with_accounts_returns_command_with_accounts() -> None:
+    accounts = ("account", "subaccount")
+    namespace = argparse.Namespace(accounts=accounts)
+    with (
+        tempfile.NamedTemporaryFile(mode="w") as file,
+        mock.patch.object(
+            Arguments, "default_file", return_value=pathlib.Path(file.name)
+        ),
+        mock.patch.object(
+            Arguments, "default_datetimestamp", return_value=_default_datetimestamp
+        ),
+    ):
+        expected = Arguments(
+            file=Arguments.default_file(),
+            datetimestamp=Arguments.default_datetimestamp(),
+            accounts=accounts,
+            delimiter=Arguments.default_delimiter(),
+        )
+
+        actual = Arguments.from_namespace(namespace)
+
+    assert actual == expected
